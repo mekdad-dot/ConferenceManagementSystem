@@ -16,18 +16,30 @@ using FrontEnd.Areas.Identity;
 using FrontEnd.Middleware;
 using FrontEnd.HealthChecks;
 using Microsoft.AspNetCore.Authentication.Google;
+using Serilog;
+using Microsoft.Extensions.Logging.Configuration;
+
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json").Build();
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
 var connectionString = builder.Configuration.GetConnectionString("IdentityDbContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityDbContextConnection' not found.");
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
     options.UseSqlServer(connectionString));    
 
-builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-});
+//builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+//{
+//    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+//    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+//});
 
 builder.Services.AddDefaultIdentity<User>()
         .AddEntityFrameworkStores<IdentityDbContext>()
@@ -78,6 +90,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseSerilogRequestLogging();
 
 app.UseRouting();
 app.UseAuthentication();;
