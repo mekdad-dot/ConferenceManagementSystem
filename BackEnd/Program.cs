@@ -73,7 +73,7 @@ app.UseEndpoints(endpoints =>
      });
      
      endpoints.MapControllers();
-     endpoints.MapHealthChecks("/health");
+    
  });
 
 app.Run();
