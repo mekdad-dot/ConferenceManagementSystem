@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 using System.ComponentModel;
 using Microsoft.Extensions.Hosting.Internal;
+using FrontEnd.Infrastructure;
 
 namespace FrontEnd
 {
@@ -77,7 +78,9 @@ namespace FrontEnd
                 ModelState.AddModelError("", "There was an issue creating the attendee for this user.");
                 return Page();
             }
-            UploadedFile(ProfileImage, Attendee.ImageName);
+            
+            await ImageHelper.UploadedFile(ProfileImage, Attendee.ImageName);
+
             // Re-issue the auth cookie with the new IsAttendee claim
             User.MakeAttendee();
             await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, User);
@@ -85,22 +88,6 @@ namespace FrontEnd
             return RedirectToPage("/Index");
         }
 
-        private async Task UploadedFile(IFormFile ProfileImage, string uniqueFileName)
-        {
-            
-
-            if (ProfileImage != null)
-            {
-
-                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(),@"wwwroot\Images");
-                
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                   await ProfileImage.CopyToAsync(fileStream);
-                }
-            }
-        }
+        
     }
 }
