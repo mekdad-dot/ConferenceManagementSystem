@@ -56,7 +56,7 @@ namespace BackEnd.Data
                 LastName = attendee.LastName,
                 UserName = attendee.UserName,
                 EmailAddress =attendee.EmailAddress,
-                //Image = attendee.Image,
+                ImageName = attendee.ImageName,
                 Sessions = attendee.SessionsAttendees?
                     .Select(sa =>
                         new ConferenceDTO.Session
@@ -77,7 +77,7 @@ namespace BackEnd.Data
                LastName = attendee.LastName,
                UserName = attendee.UserName,
                EmailAddress = attendee.EmailAddress,
-               //Image = attendee.Image
+               ImageName = attendee.ImageName
            };
     }
 }

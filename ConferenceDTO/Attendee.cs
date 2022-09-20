@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
+using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
 
 namespace ConferenceDTO
 {
@@ -25,8 +28,9 @@ namespace ConferenceDTO
         [StringLength(256)]
         public virtual string EmailAddress { get; set; }
 
-        //[Required]
-        //public virtual byte[] Image { get; set; }
+        
+        [StringLength (256)]
+        public virtual string ImageName { get; set; }
 
     }
 }

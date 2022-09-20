@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using ConferenceDTO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BackEnd.Controllers
 {
@@ -14,10 +15,12 @@ namespace BackEnd.Controllers
     public class AttendeesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public AttendeesController(ApplicationDbContext context)
+        public AttendeesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            this.webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet("{username}")]
@@ -70,7 +73,8 @@ namespace BackEnd.Controllers
                 FirstName = input.FirstName,
                 LastName = input.LastName,
                 UserName = input.UserName,
-                EmailAddress = input.EmailAddress
+                EmailAddress = input.EmailAddress,
+                ImageName = input.ImageName
             };
 
             _context.Attendees.Add(attendee);
@@ -80,6 +84,7 @@ namespace BackEnd.Controllers
 
             return CreatedAtAction(nameof(Get), new { username = result.UserName }, result);
         }
+
 
         [HttpPost("{username}/session/{sessionId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

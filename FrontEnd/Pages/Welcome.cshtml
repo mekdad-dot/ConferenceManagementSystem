@@ -7,7 +7,7 @@
     Register as an attendee to get access to cool features.
 </p>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
     <input asp-for="Attendee.UserName" value="@User.Identity.Name" type="hidden" />
     <div class="form-group">
@@ -29,6 +29,15 @@
         <span asp-validation-for="Attendee.LastName" class="text-danger"></span>
     </div>
     <div class="form-group">
+        <label asp-for="ProfileImage" class="control-label"></label>
+        <div class="custom-file">
+            <div class="col-md-6">
+                <input asp-for="ProfileImage" class="custom-file-input"/>
+            </div>
+        </div>
+        <span asp-validation-for="ProfileImage" class="text-danger"></span>
+    </div>
+    <div class="form-group">
         <label asp-for="Attendee.EmailAddress" class="control-label"></label>
         <div class="row">
             <div class="col-md-6">
@@ -43,4 +52,6 @@
         </div>
     </div>
 </form>
+
+
 <partial name="_ValidationScriptsPartial" />

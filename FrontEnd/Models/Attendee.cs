@@ -14,5 +14,8 @@ namespace FrontEnd.Pages.Models
         [DisplayName("Email address")]
         [DataType(DataType.EmailAddress)]
         public override string EmailAddress { get => base.EmailAddress; set => base.EmailAddress = value; }
+
+        [DisplayName("Image Name")]
+        public override string ImageName { get => base.ImageName ; set => base.ImageName= value; }
     }
 }

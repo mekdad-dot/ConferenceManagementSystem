@@ -33,13 +33,15 @@ builder.Host.UseSerilog();
 var connectionString = builder.Configuration.GetConnectionString("IdentityDbContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityDbContextConnection' not found.");
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
-    options.UseSqlServer(connectionString));    
+    options.UseSqlServer(connectionString));
 
-//builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-//{
-//    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-//    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-//});
+
+// Add ClientId , ClientSecret to enable googleUthentication 
+/*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{    
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+});*/
 
 builder.Services.AddDefaultIdentity<User>()
         .AddEntityFrameworkStores<IdentityDbContext>()
