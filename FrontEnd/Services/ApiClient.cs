@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ConferenceDTO;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FrontEnd.Services
 {
@@ -12,9 +14,14 @@ namespace FrontEnd.Services
     {
         private readonly HttpClient _httpClient;
 
-        public ApiClient(HttpClient httpClient)
+        private readonly IMemoryCache _memoryCache;
+
+        private readonly string sessionListCachKey = "SessionResponse";
+
+        public ApiClient(HttpClient httpClient, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
+            _memoryCache = memoryCache;
         }
 
         public async Task<bool> AddAttendeeAsync(Attendee attendee)
@@ -66,11 +73,25 @@ namespace FrontEnd.Services
 
         public async Task<List<SessionResponse>> GetSessionsAsync()
         {
-            var response = await _httpClient.GetAsync("/api/sessions");
 
-            response.EnsureSuccessStatusCode();
+            if (!this._memoryCache.TryGetValue(sessionListCachKey, out List<SessionResponse> sessions))
+            {
+                var response = await _httpClient.GetAsync("/api/sessions");
 
-            return await response.Content.ReadAsAsync<List<SessionResponse>>();
+                response.EnsureSuccessStatusCode();
+
+                sessions =  await response.Content.ReadAsAsync<List<SessionResponse>>();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(3))
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
+                    .SetPriority(CacheItemPriority.Normal)
+                    .SetSize(1024);
+
+                this._memoryCache.Set(sessionListCachKey, sessions, cacheEntryOptions);
+            }
+
+            return sessions;
         }
 
         public async Task DeleteSessionAsync(int id)
