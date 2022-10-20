@@ -16,32 +16,41 @@ namespace BackEnd.Test
 {
     public class TestAttendeeController
     {
-        [Theory]
-        [InlineData("username")]
-        public async void getAttendeeAsyn_Test(string? userName)
+        private readonly Mock<IWebHostEnvironment>? mockEnvironment;
+        private readonly DbContextOptions<ApplicationDbContext>? options;
+        private readonly AttendeesController? attendeesController;
+        private readonly ApplicationDbContext? context;
+        private readonly string? connectionString;
+
+
+        public TestAttendeeController()
         {
-            string connectionString = string.Empty;
-            
-            
-            var option = new DbContextOptionsBuilder<ApplicationDbContext>()
+
+            connectionString = "Server=(localdb)\\mssqllocaldb;Database=aspnet-BackEnd-931E56BD-86CB-4A96-BD99-2C6A6ABB0829;Trusted_Connection=True;MultipleActiveResultSets=true";
+
+            options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseSqlServer(connectionString)
                 .Options;
 
-            using(var context = new ApplicationDbContext(option))
-            {
-                var mockEnvironment = new Mock<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>();
-                
-                mockEnvironment.Setup(m => m.EnvironmentName)
-                    .Returns("Hosting:UnitTestEnvironment");
-                
-                var controllerInVariable = new AttendeesController(context, mockEnvironment.Object);
+            mockEnvironment = new Mock<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>();
 
-                var actionResult = await controllerInVariable.Get(userName);
+            mockEnvironment.Setup(m => m.EnvironmentName)
+                   .Returns("Hosting:UnitTestEnvironment");
 
-                var actualAttendee = actionResult.Value;
+            context = new ApplicationDbContext(options);
 
-                Xunit.Assert.Equal("mekdad442@gmail.com", actualAttendee?.UserName);
-            }
+            attendeesController = new AttendeesController(context, mockEnvironment.Object);
+        }
+
+        [Theory]
+        [InlineData("mekdad442@gmail.com")]
+        public async void getAttendeeAsyn_Test(string? userName)
+        {
+            var actionResult = await attendeesController.Get(userName);
+
+            var actualAttendee = actionResult.Value;
+
+            Xunit.Assert.Equal("mekdad442@gmail.com", actualAttendee?.UserName);
         }
     }
 }
